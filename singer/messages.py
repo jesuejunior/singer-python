@@ -1,7 +1,7 @@
 import sys
 
 import pytz
-import simplejson as json
+import json
 import ciso8601
 
 import singer.utils as u
