@@ -5,7 +5,7 @@ import functools
 import json
 import time
 from warnings import warn
-
+import ciso8601
 import dateutil.parser
 import pytz
 import backoff as backoff_module
@@ -20,7 +20,8 @@ def now():
     return datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
 
 def strptime_with_tz(dtime):
-    d_object = dateutil.parser.parse(dtime)
+    # d_object = dateutil.parser.parse(dtime)
+    d_object = ciso8601.parse_datetime(dtimestr)
     if d_object.tzinfo is None:
         return d_object.replace(tzinfo=pytz.UTC)
 
@@ -58,7 +59,8 @@ def strptime(dtime):
     return datetime.datetime.strptime(dtime, DATETIME_PARSE)
 
 def strptime_to_utc(dtimestr):
-    d_object = dateutil.parser.parse(dtimestr)
+    # d_object = dateutil.parser.parse(dtimestr)
+    d_object = ciso8601.parse_datetime(dtimestr)
     if d_object.tzinfo is None:
         return d_object.replace(tzinfo=pytz.UTC)
     else:
