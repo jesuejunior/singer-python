@@ -182,7 +182,7 @@ def parse_message(msg):
     # lossy conversions.  However, this will affect
     # very few data points and we have chosen to
     # leave conversion as is for now.
-    obj = json.loads(msg, use_decimal=True)
+    obj = json.loads(msg)
     msg_type = _required_key(obj, 'type')
 
     if msg_type == 'RECORD':
@@ -219,7 +219,7 @@ def parse_message(msg):
 
 
 def format_message(message):
-    return json.dumps(message.asdict(), use_decimal=True)
+    return json.dumps(message.asdict())
 
 
 def write_message(message):
