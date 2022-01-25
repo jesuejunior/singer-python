@@ -1,11 +1,17 @@
 import sys
+import os
+import json
 
 import pytz
-import json
 import ciso8601
-
 import singer.utils as u
 from .logger import get_logger
+
+try:
+    from lakehouse.toolbox.pubsub import PubSubWrapper
+except:
+    pass
+
 LOGGER = get_logger()
 
 class Message():
@@ -223,8 +229,15 @@ def format_message(message):
 
 
 def write_message(message):
-    sys.stdout.write(format_message(message) + '\n')
-    sys.stdout.flush()
+    if os.environ.get("USE_QUEUE") and "lakehouse" in sys.modules:
+        attrs = {"type": message.get("type"), "stream": message.get("stream") }
+        topic = os.environ.get("TAP_NAME")
+        if not topic:
+            raise Exception("TAP_NAME is not set. Please set the envvar TAP_NAME")
+        PubSubWrapper.write_message(topic.lower(), message.decode("utf-8"), **attrs)
+    else:
+        sys.stdout.write(format_message(message) + '\n')
+        sys.stdout.flush()
 
 
 def write_record(stream_name, record, stream_alias=None, time_extracted=None):
