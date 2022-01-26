@@ -228,15 +228,6 @@ def format_message(message):
     return json.dumps(message.asdict())
 
 
-<<<<<<< HEAD
-def write_message(message, ensure_ascii=True):
-    sys.stdout.write(format_message(message, ensure_ascii=ensure_ascii) + '\n')
-    sys.stdout.flush()
-||||||| parent of f9ac060 (Adding a consig to be able to send message to pubsub)
-def write_message(message):
-    sys.stdout.write(format_message(message) + '\n')
-    sys.stdout.flush()
-=======
 def write_message(message):
     if os.environ.get("USE_QUEUE") and "lakehouse" in sys.modules:
         attrs = {"type": message.get("type"), "stream": message.get("stream") }
@@ -247,7 +238,6 @@ def write_message(message):
     else:
         sys.stdout.write(format_message(message) + '\n')
         sys.stdout.flush()
->>>>>>> f9ac060 (Adding a consig to be able to send message to pubsub)
 
 
 def write_record(stream_name, record, stream_alias=None, time_extracted=None):
