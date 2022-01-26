@@ -233,7 +233,7 @@ def publish(message):
     if not topic:
         raise Exception("TAP_NAME is not set. Please set the envvar TAP_NAME")
     message_dict = message.asdict()
-    attrs = {"type": message_dict.get("type"), "stream": message_dict.get("stream") }
+    attrs = {"type": message_dict.get("type", ""), "stream": message_dict.get("stream", "") }
     PubSubWrapper().write_message(topic.lower(), json.dumps(message_dict).encode("utf-8"), **attrs)
 
 
