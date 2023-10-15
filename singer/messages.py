@@ -228,23 +228,6 @@ def format_message(message):
     return json.dumps(message.asdict())
 
 
-def publish(message):
-    """
-    This function will get te topic name using TAP_NAME envvar, then it will build the routing key using Google PubSub attributes
-    TODO: This function might be refactored and tests would be created
-    """
-    topic = os.environ.get("TAP_NAME")
-    if not topic:
-        raise Exception("TAP_NAME is not set. Please set the envvar TAP_NAME")
-    message_dict = message.asdict()
-    _type =  message_dict.get("type", "")
-    _stream = message_dict.get("stream", "")
-    _stream = "state" if _type == "STATE" else _stream
-
-    attrs = {"type": _type, "stream":_stream }
-    PubSubWrapper().write_message(topic.lower(), json.dumps(message_dict).encode("utf-8"), **attrs)
-
-
 def write_message(message):
     if os.environ.get("USE_QUEUE") and "lakehouse" in sys.modules:
         attrs = {"type": message.get("type"), "stream": message.get("stream") }
