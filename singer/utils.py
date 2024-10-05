@@ -107,7 +107,7 @@ def chunk(array, num):
 
 
 def load_json(path):
-    with open(path) as fil:
+    with open(path, encoding="utf-8") as fil:
         return json.load(fil)
 
 
@@ -136,6 +136,7 @@ def parse_args(required_config_keys):
     -d,--discover   Run in discover mode
     -p,--properties Properties file: DEPRECATED, please use --catalog instead
     --catalog       Catalog file
+    --dev     Runs the tap in dev mode
 
     Returns the parsed args object from argparse. For each argument that
     point to JSON files (config, state, properties), we will automatically
@@ -165,6 +166,11 @@ def parse_args(required_config_keys):
         action='store_true',
         help='Do schema discovery')
 
+    parser.add_argument(
+        '--dev',
+        action='store_true',
+        help='Runs tap in dev mode')
+
     args = parser.parse_args()
     if args.config:
         setattr(args, 'config_path', args.config)
@@ -189,7 +195,7 @@ def parse_args(required_config_keys):
 def check_config(config, required_keys):
     missing_keys = [key for key in required_keys if key not in config]
     if missing_keys:
-        raise Exception("Config is missing required keys: {}".format(missing_keys))
+        raise Exception(f"Config is missing required keys: {missing_keys}")
 
 
 def backoff(exceptions, giveup):

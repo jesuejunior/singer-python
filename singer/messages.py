@@ -17,16 +17,16 @@ LOGGER = get_logger()
 class Message():
     '''Base class for messages.'''
 
-    def asdict(self):  # pylint: disable=no-self-use
+    def asdict(self):
         raise Exception('Not implemented')
 
     def __eq__(self, other):
         return isinstance(other, Message) and self.asdict() == other.asdict()
 
     def __repr__(self):
-        pairs = ["{}={}".format(k, v) for k, v in self.asdict().items()]
+        pairs = [f"{k}={v}" for k, v in self.asdict().items()]
         attrstr = ", ".join(pairs)
-        return "{}({})".format(self.__class__.__name__, attrstr)
+        return f"{self.__class__.__name__}({attrstr})"
 
     def __str__(self):
         return str(self.asdict())
@@ -175,7 +175,7 @@ class ActivateVersionMessage(Message):
 
 def _required_key(msg, k):
     if k not in msg:
-        raise Exception("Message is missing required key '{}': {}".format(k, msg))
+        raise Exception(f"Message is missing required key '{k}': {msg}")
 
     return msg[k]
 
@@ -230,10 +230,11 @@ def format_message(message):
 
 def write_message(message):
     if os.environ.get("USE_QUEUE") and "lakehouse" in sys.modules:
+        attrs = {"type": message.get("type"), "stream": message.get("stream") }
         topic = os.environ.get("TAP_NAME")
         if not topic:
             raise Exception("TAP_NAME is not set. Please set the envvar TAP_NAME")
-        PubSubWrapper().write_message(topic, message)
+        PubSubWrapper.write_message(topic.lower(), message.decode("utf-8"), **attrs)
     else:
         sys.stdout.write(format_message(message) + '\n')
         sys.stdout.flush()
